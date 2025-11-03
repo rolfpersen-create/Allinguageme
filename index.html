@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>AllLinguageme</title>
+  <style>
+    :root { --blue:#003366; --coral:#FF6B4A; --sand:#F5EBDD; --ink:#0b1320; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background: linear-gradient(180deg, var(--sand), #fff); color:#111; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 16px; }
+    .header { position: sticky; top:0; background: rgba(255,255,255,.9); backdrop-filter: blur(6px); border-bottom:1px solid #eee; z-index:9;}
+    .row { display:grid; grid-template-columns: 1fr; gap:24px; }
+    @media(min-width:900px){ .row{ grid-template-columns: 1fr 1fr; } }
+    .btn { padding: 12px 16px; border-radius: 8px; border:1px solid #ddd; background:#fff; cursor:pointer; }
+    .btn.primary { background: var(--blue); color:#fff; border:none; }
+    .btn.accent { background: var(--coral); color:#fff; border:none; }
+    .card { border:1px solid #eee; border-radius: 14px; background:#fff; padding:16px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
+    .muted { color:#666; }
+    .input { padding: 12px 14px; border:1px solid #ddd; border-radius:8px; width:100%; }
+    .pill { display:inline-block; background:#f2f2f2; padding:4px 10px; border-radius:999px; font-size:12px; margin-right:8px;}
+    .center { text-align:center; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="container" style="display:flex; align-items:center; justify-content:space-between;">
+      <div style="font-weight:600; color:var(--blue);">AllLinguageme</div>
+      <nav style="display:flex; gap:12px; font-size:14px;">
+        <a href="#how">Hvordan</a>
+        <a href="#features">Funksjoner</a>
+        <a href="#pricing">Pris</a>
+      </nav>
+    </div>
+  </div>
+
+  <main>
+    <section>
+      <div class="container row" style="padding: 48px 16px;">
+        <div>
+          <h1 style="font-size:40px; line-height:1.1; margin:0 0 12px; color: var(--ink);">
+            Lær språk – seriøst. <span style="color:var(--coral)">Uten å kjede deg.</span>
+          </h1>
+          <p class="muted" style="font-size:18px;">AllLinguageme er din AI-mentor som trener deg i ekte samtaler – med uttale, kultur og personlighet.</p>
+          <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:16px;">
+            <a class="btn primary" href="#pricing">Start gratis</a>
+            <a class="btn" href="#demo">Se demo</a>
+          </div>
+          <form id="waitlist" style="margin-top:14px; display:flex; gap:8px; flex-wrap:wrap;" onsubmit="return false;">
+            <input id="email" type="email" class="input" placeholder="Din e-post for tidlig tilgang"/>
+            <button id="join" class="btn accent">Bli med på ventelisten</button>
+          </form>
+          <div id="msg" style="display:none; margin-top:8px;" class="pill">Takk! Du står på ventelisten.</div>
+          <div class="muted" style="margin-top:12px; font-size:14px;">
+            <span class="pill">Personvern i fokus</span>
+            <span class="pill">20+ språk</span>
+          </div>
+        </div>
+
+        <div id="demo" class="card">
+          <div style="font-weight:600;">Live demo – AI-samtale</div>
+          <div class="card" style="background:#f8f8f8; margin-top:8px;">
+            <div style="font-weight:600; font-size:14px;">AI (Filippinsk venn):</div>
+            <div class="muted" style="font-size:14px;">Kamusta! Anong pangalan mo? (Hei! Hva heter du?)</div>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <input class="input" placeholder="Skriv svaret ditt…"/>
+            <button class="btn">Send</button>
+          </div>
+          <div class="muted" style="font-size:12px; margin-top:6px;">Tips: Svar «Ako si [navn].»</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" style="background:#fff; padding:48px 0;">
+      <div class="container">
+        <h2 style="font-size:28px;">Hvordan det fungerer</h2>
+        <div class="row" style="margin-top:16px;">
+          <div class="card"><div style="font-weight:600;">1. Velg mål og språk</div><div class="muted">Reise, jobb eller flyt – appen tilpasser læringsløpet ditt.</div></div>
+          <div class="card"><div style="font-weight:600;">2. Snakk med AI-mentorer</div><div class="muted">Realistiske roller trener deg i ekte dialoger – og retter deg vennlig.</div></div>
+          <div class="card"><div style="font-weight:600;">3. Målbar fremgang</div><div class="muted">Uttalepoeng, nivåer og kulturforståelse, ikke bare gloser.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" style="padding:48px 0;">
+      <div class="container">
+        <h2 style="font-size:28px;">Det du får</h2>
+        <div class="row" style="margin-top:16px;">
+          <ul class="card" style="list-style:none; padding:16px; margin:0;">
+            <li>AI-samtaler med personlighet (barista, kollega, venn)</li>
+            <li>Uttaletrening og tilbakemelding i sanntid</li>
+            <li>Dynamiske leksjoner basert på hvordan du lærer</li>
+            <li>Spaced repetition-flashcards</li>
+            <li>Fokus på kultur, tone og naturlige uttrykk</li>
+          </ul>
+          <div class="card">
+            <div style="font-weight:600;">Mini-demo: Dagens frase</div>
+            <div class="muted">“Magkano ito?” – Hvor mye koster dette?</div>
+            <div class="muted">“¿Cuánto cuesta?” – Hvor mye koster det?</div>
+            <div class="muted">“How much is this?”</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing" style="background:#fff; padding:48px 0;">
+      <div class="container">
+        <h2 style="font-size:28px;">Pris</h2>
+        <div class="row" style="margin-top:16px;">
+          <div class="card"><div style="font-weight:600;">Gratis</div><ul><li>10 meldinger/dag</li><li>Grunnleggende leksjoner</li><li>Flashcards</li></ul><button class="btn" style="width:100%">Start gratis</button></div>
+          <div class="card" style="border-color:var(--coral); box-shadow:0 6px 14px rgba(0,0,0,.08)"><div class="pill" style="position:relative; left:calc(100% - 110px); top:-10px; background:var(--coral); color:#fff;">Mest valgt</div><div style="font-weight:600;">Premium</div><div style="font-size:20px; font-weight:700;">99 kr/mnd</div><ul><li>Ubegrenset AI-samtale</li><li>Avansert uttalescore</li><li>Temakurs + kulturmoduler</li></ul><button class="btn primary" style="width:100%">Oppgrader</button></div>
+          <div class="card"><div style="font-weight:600;">Bedrift</div><ul><li>Teamdashbord og rapporter</li><li>Skreddersydde kurs</li><li>Volumrabatter</li></ul><button class="btn" style="width:100%">Kontakt salg</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="center" style="padding:48px 0; background:var(--sand)">
+      <div class="container">
+        <h3 style="font-size:22px;">Klar for å snakke som en lokal?</h3>
+        <p class="muted">Kom i gang gratis på under ett minutt.</p>
+        <a class="btn accent" href="#pricing">Kom i gang</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="center muted" style="padding:24px 0;">
+    © <span id="year"></span> AllLinguageme • Personvern • Vilkår
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    document.getElementById('join').addEventListener('click', function() {
+      var email = (document.getElementById('email').value || '').trim();
+      if (!/.+@.+\..+/.test(email)) { alert('Skriv en gyldig e-post.'); return; }
+      try {
+        var key='algm.waitlist'; var arr = JSON.parse(localStorage.getItem(key) || '[]');
+        if (!arr.includes(email)) arr.push(email);
+        localStorage.setItem(key, JSON.stringify(arr));
+      } catch(e) {}
+      document.getElementById('email').value='';
+      var msg = document.getElementById('msg'); msg.style.display='inline-block';
+      msg.textContent = 'Takk! Du står på ventelisten.';
+      setTimeout(()=>{ msg.style.display='none'; }, 4000);
+    });
+  </script>
+</body>
+</html>
