@@ -1,106 +1,65 @@
 <!doctype html>
 <html lang="no">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AllLinguageme Admin</title>
   <style>
-    :root { --accent:#ff6a3d; --bg:#f6f6f7; }
-    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:var(--bg); }
-    .wrap { max-width: 780px; margin: 0 auto; padding: 28px; }
-    .card { background:#fff; border-radius:16px; box-shadow: 0 10px 25px rgba(0,0,0,.06); padding: 28px; }
-    h1 { margin:0 0 18px; }
-    .panel { display:none; }
-    .login { display:flex; gap:10px; }
-    input[type="password"], input[type="text"] { flex:1; padding:12px 14px; border:1px solid #ddd; border-radius:12px; }
-    .btn { padding:12px 16px; border-radius:12px; border:none; font-weight:700; cursor:pointer; }
-    .btn.primary { background:var(--accent); color:#fff; }
-    pre { background:#f1f3f5; padding:12px; border-radius:10px; overflow:auto; }
-    .row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
-    .note { color:#666; font-size:13px; }
+    body{margin:0;background:#f7f7f9;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#222}
+    .wrap{max-width:720px;margin:40px auto;padding:24px;background:#fff;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
+    h1{margin:0 0 16px}
+    .btn{display:inline-block;margin-right:10px;padding:12px 16px;border:none;border-radius:12px;background:#ff6a3d;color:#fff;font-weight:700;cursor:pointer}
+    pre{background:#eee;padding:12px;border-radius:12px;white-space:pre-wrap}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="card">
-      <h1>AllLinguageme Admin</h1>
-
-      <!-- Login -->
-      <div id="loginBox" class="login">
-        <input id="pin" type="password" placeholder="Skriv inn PIN" />
-        <button class="btn primary" id="openBtn">Åpne</button>
-      </div>
-
-      <!-- Panel -->
-      <div id="panel" class="panel">
-        <div class="row">
-          <button class="btn primary" id="dlCsv">⬇️ Last ned som CSV</button>
-          <button class="btn" id="clearBtn">🗑️ Tøm venteliste</button>
-        </div>
-        <pre id="output">Ingen registrerte enda.</pre>
-        <div class="note">CSV åpnes i Excel/Google Sheets. På mobil kan nedlasting be om bekreftelse.</div>
-      </div>
-    </div>
+    <h1>AllLinguageme Admin</h1>
+    <button id="downloadBtn" class="btn">📥 Last ned venteliste</button>
+    <button id="clearBtn" class="btn" style="background:#d33">🧺 Tøm venteliste (lokal)</button>
+    <pre id="output">Ingen registrerte e-poster enda.</pre>
   </div>
 
   <script>
-    // Endre PIN her om du vil
-    const PIN = "rolf2025";
-    const STORAGE_KEY = "allinguageme_waitlist";
+    // FYLL INN (samme som i index.html)
+    const ENDPOINT = "PASTE_WEB_APP_URL_HER";
+    const API_KEY  = "SETT_EN_HEMMELIG_NØKKEL";
 
-    const $ = (id) => document.getElementById(id);
-    const loginBox = $("loginBox");
-    const panel = $("panel");
-    const out = $("output");
-
-    $("openBtn").onclick = () => {
-      const p = $("pin").value.trim();
-      if (p === PIN) {
-        loginBox.style.display = "none";
-        panel.style.display = "block";
-        loadList();
-      } else {
-        alert("Feil PIN.");
+    async function downloadList(){
+      const out=document.getElementById("output");
+      out.textContent="Laster...";
+      try{
+        const res = await fetch(`${ENDPOINT}?key=${encodeURIComponent(API_KEY)}`);
+        if(!res.ok) throw new Error("Not OK");
+        const rows = await res.json(); // 2D array (inkl header)
+        if(!rows || rows.length<=1){
+          out.textContent="Ingen registrerte e-poster enda.";
+          return;
+        }
+        const csv = rows.map(r => r.map(x => `"${String(x).replace(/"/g,'""')}"`).join(",")).join("\n");
+        const blob = new Blob([csv], {type:"text/csv"});
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "venteliste.csv";
+        link.click();
+        out.textContent = (rows.length-1) + " rader lastet ned.";
+      }catch(e){
+        out.textContent = "Kunne ikke hente fra Google Sheet. Viser lokal fallback.\n";
+        const list = JSON.parse(localStorage.getItem("waitlist")||"[]");
+        out.textContent += list.length ? JSON.stringify(list,null,2) : "Ingen lokalt lagret.";
       }
-    };
-
-    function getList(){
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
-      catch { return []; }
     }
 
-    function loadList(){
-      const list = getList();
-      if (!list.length) {
-        out.textContent = "Ingen registrerte enda.";
-        return;
-      }
-      // Vis pent
-      out.textContent = list
-        .map((x,i) => `${i+1}. ${x.name} <${x.email}> — ${new Date(x.ts).toLocaleString()}`)
-        .join("\n");
+    function clearList(){
+      if(!confirm("Dette sletter LOKAL fallback (ikke Google-arket). Fortsette?")) return;
+      localStorage.removeItem("waitlist");
+      document.getElementById("output").textContent="Lokal venteliste tømt.";
     }
 
-    $("clearBtn").onclick = () => {
-      if (confirm("Er du sikker på at du vil tømme ventelista?")) {
-        localStorage.removeItem(STORAGE_KEY);
-        loadList();
-      }
-    };
-
-    // CSV-nedlasting
-    $("dlCsv").onclick = () => {
-      const list = getList();
-      const rows = [["Name","Email","Timestamp"], ...list.map(x => [x.name, x.email, x.ts])];
-      const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "allingguageme-venteliste.csv";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    };
+    document.addEventListener("DOMContentLoaded", ()=>{
+      document.getElementById("downloadBtn").onclick=downloadList;
+      document.getElementById("clearBtn").onclick=clearList;
+    });
   </script>
 </body>
 </html>
