@@ -3,141 +3,153 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AllLinguageme – Venteliste</title>
+  <title>AllLinguageme</title>
   <style>
-    :root { --blue:#003366; --accent:#ff6a3d; --bg:#f6f6f7; }
-    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:var(--bg); color:#222; }
-    .wrap { max-width: 760px; margin: 0 auto; padding: 24px; }
-    .card { background:#fff; border-radius:16px; box-shadow: 0 10px 25px rgba(0,0,0,.06); padding: 28px; }
-    h1 { margin:0 0 8px; font-size: 28px; }
-    p.lead { margin:0 0 20px; color:#444; }
-    label { display:block; margin:14px 0 6px; font-weight:600; }
-    input { width:100%; padding:12px 14px; border:1px solid #ddd; border-radius:12px; font-size:16px; }
-    .row { display:grid; gap:12px; grid-template-columns:1fr; }
-    @media (min-width:620px){ .row{ grid-template-columns:1fr 1fr; } }
-    .btn { display:inline-block; padding:12px 18px; border-radius:12px; border:none; cursor:pointer; font-weight:700; }
-    .btn.primary { background:var(--accent); color:#fff; }
-    .note { margin-top:12px; font-size:14px; color:#666; }
-    .ok { color:#0a7a28; font-weight:600; }
-    .err { color:#b00020; font-weight:600; }
-    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
-    .lang { display:flex; gap:8px; }
-    .chip { border:1px solid #ddd; padding:6px 10px; border-radius:999px; background:#fff; font-size:13px; cursor:pointer; }
-    .chip.active { border-color: var(--blue); color:var(--blue); font-weight:700; }
-    a.admin { font-size:13px; color:var(--blue); text-decoration:none; }
+    :root{--blue:#003366;--coral:#ff6a3d;--bg:#f7f7f9;--card:#ffffff;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:#222}
+    .container{max-width:960px;margin:0 auto;padding:24px}
+    .row{display:grid;grid-template-columns:1fr;gap:24px}
+    @media (min-width:900px){.row{grid-template-columns:1fr}}
+    .card{background:var(--card);border-radius:16px;padding:28px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
+    .header{position:sticky;top:0;background:rgba(247,247,249,.7);backdrop-filter:saturate(180%) blur(8px);border-bottom:1px solid #eaeaea}
+    .brand{font-weight:700;color:var(--blue)}
+    .topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
+    .lang-switch{display:flex;gap:8px}
+    .pill{border:1px solid #ccc;border-radius:999px;padding:6px 12px;background:#fff;cursor:pointer}
+    .pill.active{border-color:var(--blue);color:var(--blue);font-weight:600}
+    h1{margin:0 0 8px;font-size:32px}
+    p.lead{margin:0 0 24px;color:#555}
+    label{display:block;margin:12px 0 6px;font-weight:600}
+    input{width:100%;padding:12px 14px;border:1px solid #ddd;border-radius:12px;font-size:16px}
+    .btn{display:inline-block;padding:14px 18px;border-radius:12px;border:none;background:var(--coral);color:#fff;font-weight:700;cursor:pointer}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .mini{font-size:13px}
+    .success{color:green;font-weight:600}
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="header">
     <div class="topbar">
-      <div class="lang">
-        <button class="chip active" id="lang-no">Norsk</button>
-        <button class="chip" id="lang-en">English</button>
+      <div class="brand">AllLinguageme</div>
+      <div class="lang-switch">
+        <button id="pill-no" class="pill">Norsk</button>
+        <button id="pill-en" class="pill">English</button>
       </div>
-      <a class="admin" href="admin.html">Admin</a>
     </div>
+  </div>
 
-    <div class="card">
-      <h1 id="t-title">Bli med på ventelista</h1>
-      <p class="lead" id="t-lead">Legg igjen **navn og e-post**, så sier vi fra når AllLinguageme er klar.</p>
+  <div class="container">
+    <div class="row">
+      <div class="card">
+        <h1 id="t-title">Bli med på ventelista</h1>
+        <p id="t-lead" class="lead">Legg igjen navn og e-post, så sier vi fra når AllLinguageme er klar.</p>
 
-      <div class="row">
-        <div>
-          <label for="name" id="t-name-label">Navn</label>
-          <input id="name" type="text" placeholder="Fornavn og etternavn" autocomplete="name" />
-        </div>
-        <div>
-          <label for="email" id="t-email-label">E-post</label>
-          <input id="email" type="email" placeholder="navn@domene.no" autocomplete="email" />
-        </div>
-      </div>
+        <form id="form">
+          <label id="t-name" for="name">Navn</label>
+          <input id="name" type="text" placeholder="Fornavn og etternavn" required>
 
-      <div style="margin-top:18px;">
-        <button class="btn primary" id="joinBtn">Meld meg på</button>
-        <div class="note" id="msg"></div>
+          <label id="t-email" for="email">E-post</label>
+          <input id="email" type="email" placeholder="navn@domene.no" required style="margin-bottom:16px">
+
+          <button id="submit" class="btn" type="submit">Meld meg på</button>
+        </form>
+
+        <p id="msg" class="mini" style="margin-top:12px"></p>
       </div>
     </div>
   </div>
 
   <script>
-    // --- Språk-tekster (NO/EN) ---
-    const UI = {
+    // FYLL INN DISSE TO (samme verdier skal også inn i admin.html)
+    const ENDPOINT = "PASTE_WEB_APP_URL_HER";        // Google Apps Script web app URL
+    const API_KEY  = "SETT_EN_HEMMELIG_NØKKEL";      // hemmelig streng du velger
+
+    // Språktekster
+    const TEXT = {
       no: {
-        title: "Bli med på ventelista",
-        lead: "Legg igjen **navn og e-post**, så sier vi fra når AllLinguageme er klar.",
-        name: "Navn",
-        email: "E-post",
-        join: "Meld meg på",
-        ok: "Takk! Du står nå på ventelista.",
-        err: "Skriv inn gyldig navn og e-post.",
+        title:"Bli med på ventelista",
+        lead:"Legg igjen navn og e-post, så sier vi fra når AllLinguageme er klar.",
+        name:"Navn", email:"E-post",
+        placeholderName:"Fornavn og etternavn",
+        placeholderEmail:"navn@domene.no",
+        submit:"Meld meg på",
+        ok:"Takk! Du er registrert. 🎉",
+        err:"Noe gikk galt. Prøv igjen.",
+        langNo:"Norsk", langEn:"English"
       },
       en: {
-        title: "Join the waitlist",
-        lead: "Leave your **name and email**, and we’ll notify you when AllLinguageme is ready.",
-        name: "Name",
-        email: "Email",
-        join: "Join waitlist",
-        ok: "Thanks! You’re on the waitlist.",
-        err: "Please enter a valid name and email.",
+        title:"Join the waitlist",
+        lead:"Leave your name and email and we’ll notify you when AllLinguageme is ready.",
+        name:"Name", email:"Email",
+        placeholderName:"First and last name",
+        placeholderEmail:"name@example.com",
+        submit:"Join waitlist",
+        ok:"Thanks! You’re on the list. 🎉",
+        err:"Something went wrong. Please try again.",
+        langNo:"Norsk", langEn:"English"
       }
     };
 
-    const el = (id) => document.getElementById(id);
-    const msg = el("msg");
-    const nameInput = el("name");
-    const emailInput = el("email");
-    const STORAGE_KEY = "allinguageme_waitlist";
-    let currentLang = "no";
+    // Auto språk + lagre valg
+    const savedLang = localStorage.getItem("lang");
+    const auto = (navigator.language||"").toLowerCase().startsWith("no") ? "no":"en";
+    let lang = savedLang || auto;
 
-    function setLang(lang){
-      currentLang = lang;
-      const t = UI[lang];
-      document.getElementById("t-title").textContent = t.title;
-      document.getElementById("t-lead").textContent = t.lead.replace("**","").replace("**","");
-      document.getElementById("t-name-label").textContent = t.name;
-      document.getElementById("t-email-label").textContent = t.email;
-      document.getElementById("joinBtn").textContent = t.join;
-      document.getElementById("lang-no").classList.toggle("active", lang==="no");
-      document.getElementById("lang-en").classList.toggle("active", lang==="en");
+    function setLang(l){
+      lang=l; localStorage.setItem("lang", l);
+      const t=TEXT[l];
+      document.getElementById("t-title").textContent=t.title;
+      document.getElementById("t-lead").textContent=t.lead;
+      document.getElementById("t-name").textContent=t.name;
+      document.getElementById("t-email").textContent=t.email;
+      document.getElementById("name").placeholder=t.placeholderName;
+      document.getElementById("email").placeholder=t.placeholderEmail;
+      document.getElementById("submit").textContent=t.submit;
+      document.getElementById("pill-no").textContent=t.langNo;
+      document.getElementById("pill-en").textContent=t.langEn;
+      document.querySelectorAll(".pill").forEach(p=>p.classList.remove("active"));
+      document.getElementById(l==="no"?"pill-no":"pill-en").classList.add("active");
     }
 
-    document.getElementById("lang-no").onclick = () => setLang("no");
-    document.getElementById("lang-en").onclick = () => setLang("en");
-    setLang("no");
+    // Innsending til Google Sheet, fallback til localStorage
+    async function submitForm(e){
+      e.preventDefault();
+      const name  = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const btn = document.getElementById("submit");
+      const msg = document.getElementById("msg");
+      if(!name || !email) return;
 
-    function loadList(){
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
-      catch { return []; }
-    }
-    function saveList(list){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-    }
-    function validEmail(v){
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-    }
+      btn.disabled=true; msg.textContent="";
 
-    document.getElementById("joinBtn").addEventListener("click", () => {
-      const name = nameInput.value.trim();
-      const email = emailInput.value.trim().toLowerCase();
-
-      if (!name || !validEmail(email)) {
-        msg.textContent = UI[currentLang].err;
-        msg.className = "note err";
-        return;
+      try{
+        const res = await fetch(ENDPOINT, {
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ key: API_KEY, name, email, lang })
+        });
+        if(!res.ok) throw new Error("not ok");
+        msg.textContent = TEXT[lang].ok;
+        msg.className = "mini success";
+        document.getElementById("form").reset();
+      }catch(err){
+        const list = JSON.parse(localStorage.getItem("waitlist")||"[]");
+        list.push({name,email,lang,ts:Date.now()});
+        localStorage.setItem("waitlist", JSON.stringify(list));
+        msg.textContent = TEXT[lang].ok + " (lagret lokalt)";
+        msg.className = "mini success";
+      }finally{
+        btn.disabled=false;
       }
+    }
 
-      const list = loadList();
-      // unngå duplikater på e-post
-      if (!list.some(x => x.email === email)) {
-        list.push({ name, email, ts: new Date().toISOString() });
-        saveList(list);
-      }
-      nameInput.value = "";
-      emailInput.value = "";
-      msg.textContent = UI[currentLang].ok;
-      msg.className = "note ok";
+    document.addEventListener("DOMContentLoaded", ()=>{
+      setLang(lang);
+      document.getElementById("pill-no").onclick=()=>setLang("no");
+      document.getElementById("pill-en").onclick=()=>setLang("en");
+      document.getElementById("form").addEventListener("submit", submitForm);
     });
   </script>
 </body>
 </html>
-
