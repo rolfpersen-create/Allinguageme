@@ -1,1 +1,111 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AllLinguageme Admin</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      color: #222;
+      text-align: center;
+      padding: 40px;
+    }
+    .login, .panel {
+      max-width: 400px;
+      margin: 50px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #e64a19;
+    }
+    h1 {
+      font-size: 1.4em;
+      margin-bottom: 15px;
+    }
+    pre {
+      text-align: left;
+      background: #eee;
+      padding: 10px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="login" id="loginBox">
+    <h1>Admin-pålogging</h1>
+    <input type="password" id="pin" placeholder="Skriv inn PIN">
+    <button onclick="login()">Åpne</button>
+    <p id="error" style="color:red;"></p>
+  </div>
 
+  <div class="panel" id="panel" style="display:none;">
+    <h1>AllLinguageme Admin</h1>
+    <button onclick="downloadList()">📥 Last ned venteliste</button>
+    <button onclick="clearList()">🗑️ Tøm venteliste</button>
+    <pre id="output"></pre>
+  </div>
+
+  <script>
+    const PIN = "rolf2025";
+    const STORAGE_KEY = "waitlist_emails";
+
+    function login() {
+      const pinInput = document.getElementById("pin").value;
+      if (pinInput === PIN) {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("panel").style.display = "block";
+        loadList();
+      } else {
+        document.getElementById("error").innerText = "Feil PIN, prøv igjen.";
+      }
+    }
+
+    function loadList() {
+      const list = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      const output = document.getElementById("output");
+      if (list.length === 0) {
+        output.textContent = "Ingen registrerte e-poster enda.";
+      } else {
+        output.textContent = list.join("\\n");
+      }
+    }
+
+    function downloadList() {
+      const list = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      const blob = new Blob([list.join("\\n")], { type: "text/plain" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "venteliste.txt";
+      link.click();
+    }
+
+    function clearList() {
+      if (confirm("Er du sikker på at du vil slette ventelisten?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        loadList();
+      }
+    }
+  </script>
+</body>
+</html>
