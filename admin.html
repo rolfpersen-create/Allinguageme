@@ -1,111 +1,106 @@
 <!doctype html>
 <html lang="no">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AllLinguageme Admin</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
-      color: #222;
-      text-align: center;
-      padding: 40px;
-    }
-    .login, .panel {
-      max-width: 400px;
-      margin: 50px auto;
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    button {
-      background-color: #ff5722;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #e64a19;
-    }
-    h1 {
-      font-size: 1.4em;
-      margin-bottom: 15px;
-    }
-    pre {
-      text-align: left;
-      background: #eee;
-      padding: 10px;
-      border-radius: 6px;
-      overflow-x: auto;
-    }
+    :root { --accent:#ff6a3d; --bg:#f6f6f7; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:var(--bg); }
+    .wrap { max-width: 780px; margin: 0 auto; padding: 28px; }
+    .card { background:#fff; border-radius:16px; box-shadow: 0 10px 25px rgba(0,0,0,.06); padding: 28px; }
+    h1 { margin:0 0 18px; }
+    .panel { display:none; }
+    .login { display:flex; gap:10px; }
+    input[type="password"], input[type="text"] { flex:1; padding:12px 14px; border:1px solid #ddd; border-radius:12px; }
+    .btn { padding:12px 16px; border-radius:12px; border:none; font-weight:700; cursor:pointer; }
+    .btn.primary { background:var(--accent); color:#fff; }
+    pre { background:#f1f3f5; padding:12px; border-radius:10px; overflow:auto; }
+    .row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+    .note { color:#666; font-size:13px; }
   </style>
 </head>
 <body>
-  <div class="login" id="loginBox">
-    <h1>Admin-pålogging</h1>
-    <input type="password" id="pin" placeholder="Skriv inn PIN">
-    <button onclick="login()">Åpne</button>
-    <p id="error" style="color:red;"></p>
-  </div>
+  <div class="wrap">
+    <div class="card">
+      <h1>AllLinguageme Admin</h1>
 
-  <div class="panel" id="panel" style="display:none;">
-    <h1>AllLinguageme Admin</h1>
-    <button onclick="downloadList()">📥 Last ned venteliste</button>
-    <button onclick="clearList()">🗑️ Tøm venteliste</button>
-    <pre id="output"></pre>
+      <!-- Login -->
+      <div id="loginBox" class="login">
+        <input id="pin" type="password" placeholder="Skriv inn PIN" />
+        <button class="btn primary" id="openBtn">Åpne</button>
+      </div>
+
+      <!-- Panel -->
+      <div id="panel" class="panel">
+        <div class="row">
+          <button class="btn primary" id="dlCsv">⬇️ Last ned som CSV</button>
+          <button class="btn" id="clearBtn">🗑️ Tøm venteliste</button>
+        </div>
+        <pre id="output">Ingen registrerte enda.</pre>
+        <div class="note">CSV åpnes i Excel/Google Sheets. På mobil kan nedlasting be om bekreftelse.</div>
+      </div>
+    </div>
   </div>
 
   <script>
+    // Endre PIN her om du vil
     const PIN = "rolf2025";
-    const STORAGE_KEY = "waitingList";
+    const STORAGE_KEY = "allinguageme_waitlist";
 
-    function login() {
-      const pinInput = document.getElementById("pin").value;
-      if (pinInput === PIN) {
-        document.getElementById("loginBox").style.display = "none";
-        document.getElementById("panel").style.display = "block";
+    const $ = (id) => document.getElementById(id);
+    const loginBox = $("loginBox");
+    const panel = $("panel");
+    const out = $("output");
+
+    $("openBtn").onclick = () => {
+      const p = $("pin").value.trim();
+      if (p === PIN) {
+        loginBox.style.display = "none";
+        panel.style.display = "block";
         loadList();
       } else {
-        document.getElementById("error").innerText = "Feil PIN, prøv igjen.";
+        alert("Feil PIN.");
       }
+    };
+
+    function getList(){
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+      catch { return []; }
     }
 
-    function loadList() {
-      const list = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-      const output = document.getElementById("output");
-      if (list.length === 0) {
-        output.textContent = "Ingen registrerte e-poster enda.";
-      } else {
-        output.textContent = list.join("\\n");
+    function loadList(){
+      const list = getList();
+      if (!list.length) {
+        out.textContent = "Ingen registrerte enda.";
+        return;
       }
+      // Vis pent
+      out.textContent = list
+        .map((x,i) => `${i+1}. ${x.name} <${x.email}> — ${new Date(x.ts).toLocaleString()}`)
+        .join("\n");
     }
 
-    function downloadList() {
-      const list = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-      const blob = new Blob([list.join("\\n")], { type: "text/plain" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "venteliste.txt";
-      link.click();
-    }
-
-    function clearList() {
-      if (confirm("Er du sikker på at du vil slette ventelisten?")) {
+    $("clearBtn").onclick = () => {
+      if (confirm("Er du sikker på at du vil tømme ventelista?")) {
         localStorage.removeItem(STORAGE_KEY);
         loadList();
       }
-    }
+    };
+
+    // CSV-nedlasting
+    $("dlCsv").onclick = () => {
+      const list = getList();
+      const rows = [["Name","Email","Timestamp"], ...list.map(x => [x.name, x.email, x.ts])];
+      const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "allingguageme-venteliste.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    };
   </script>
 </body>
 </html>
