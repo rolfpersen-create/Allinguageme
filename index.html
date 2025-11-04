@@ -1,1 +1,118 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AllLinguageme</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+    h1 {
+      margin-bottom: 15px;
+      color: #003366;
+    }
+    .lang-buttons {
+      margin-bottom: 15px;
+    }
+    button {
+      margin: 5px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button.primary { background: #003366; color: white; }
+    button.secondary { background: #f04e23; color: white; }
+    input[type="email"] {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .message {
+      margin-top: 10px;
+      color: green;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id="title">AllLinguageme</h1>
 
+    <div class="lang-buttons">
+      <button class="primary" onclick="setLang('no')">🇳🇴 Norsk</button>
+      <button class="secondary" onclick="setLang('en')">🇬🇧 English</button>
+    </div>
+
+    <p id="description">Meld deg på ventelisten for tidlig tilgang:</p>
+
+    <input type="email" id="email" placeholder="Skriv inn e-post" />
+    <button onclick="joinList()">Send inn</button>
+
+    <p class="message" id="message"></p>
+  </div>
+
+  <script>
+    const translations = {
+      no: {
+        title: "AllLinguageme",
+        description: "Meld deg på ventelisten for tidlig tilgang:",
+        placeholder: "Skriv inn e-post",
+        submit: "Send inn",
+        success: "Takk! Du er lagt til på ventelisten."
+      },
+      en: {
+        title: "AllLinguageme",
+        description: "Join the waiting list for early access:",
+        placeholder: "Enter your email",
+        submit: "Submit",
+        success: "Thanks! You have been added to the waiting list."
+      }
+    };
+
+    let currentLang = "no";
+
+    function setLang(lang) {
+      currentLang = lang;
+      document.getElementById("title").innerText = translations[lang].title;
+      document.getElementById("description").innerText = translations[lang].description;
+      document.getElementById("email").placeholder = translations[lang].placeholder;
+      document.querySelector("button[onclick='joinList()']").innerText = translations[lang].submit;
+      document.getElementById("message").innerText = "";
+    }
+
+    function joinList() {
+      const email = document.getElementById("email").value;
+      if (!email.includes("@")) {
+        alert("Ugyldig e-postadresse");
+        return;
+      }
+      const list = JSON.parse(localStorage.getItem("waitingList") || "[]");
+      list.push(email);
+      localStorage.setItem("waitingList", JSON.stringify(list));
+      document.getElementById("message").innerText = translations[currentLang].success;
+      document.getElementById("email").value = "";
+    }
+  </script>
+</body>
+</html>
