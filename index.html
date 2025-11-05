@@ -59,97 +59,92 @@
       </div>
     </div>
   </div>
+const API_URL = "https://script.google.com/macros/s/AKfycbyx8Z06xUiALYpF7NFNAush-6CQoOmucp0X3_GwIXdyI7HcsAxSYHP9conA4hbLJ13j/exec";
+const API_KEY = "rolf-venteliste-2025";
+
+const TEXT = {
+  no: {
+    title: "Bli med på ventelista",
+    lead: "Legg igjen navn og e-post, så sier vi fra når AllLinguageme er klar.",
+    name: "Navn",
+    email: "E-post",
+    placeholderName: "Fornavn og etternavn",
+    placeholderEmail: "navn@domene.no",
+    submit: "Meld meg på",
+    ok: "Takk! Du er registrert.",
+    err: "Noe gikk galt. Prøv igjen.",
+    langNo: "Norsk", langEn: "English"
+  },
+  en: {
+    title: "Join the waitlist",
+    lead: "Leave your name and email and we'll notify you when AllLinguageme is ready.",
+    name: "Name", email: "Email",
+    placeholderName: "First and last name",
+    placeholderEmail: "name@example.com",
+    submit: "Join the waitlist",
+    ok: "Thanks! You're on the list.",
+    err: "Something went wrong. Please try again.",
+    langNo: "Norsk", langEn: "English"
+  }
+};
+
+let lang = (navigator.language || "no").toLowerCase().startsWith("no") ? "no" : "en";
+
+function setLang(l) {
+  lang = l;
+  const t = TEXT[lang];
+  document.getElementById("t-title").textContent = t.title;
+  document.getElementById("t-lead").textContent = t.lead;
+  document.getElementById("t-name").textContent = t.name;
+  document.getElementById("t-email").textContent = t.email;
+  document.getElementById("name").placeholder = t.placeholderName;
+  document.getElementById("email").placeholder = t.placeholderEmail;
+  document.getElementById("submit").textContent = t.submit;
+  document.getElementById("pill-no").textContent = t.langNo;
+  document.getElementById("pill-en").textContent = t.langEn;
+  document.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
+  document.getElementById("pill-" + lang).classList.add("active");
+}
+
+async function submitWaitlist(e) {
+  e.preventDefault();
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+
+  if (!name || !email) {
+    alert("Fyll inn navn og e-post 😊");
+    return;
+  }
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key: API_KEY, name, email, lang })
+    });
+    const data = await res.json().catch(() => ({}));
+
+    if (res.ok && data.ok) {
+      alert("Takk! Du er lagt på ventelista ✨");
+      e.target.reset?.();
+    } else {
+      throw new Error(data?.error || "Ukjent feil");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Oops – fikk ikke sendt inn. Prøv igjen senere.");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setLang(lang);
+  document.getElementById("pill-no").onclick = () => setLang("no");
+  document.getElementById("pill-en").onclick = () => setLang("en");
+  document.getElementById("form").addEventListener("submit", submitWaitlist);
+});
 
   <script>
-    // FYLL INN DISSE TO (samme verdier skal også inn i admin.html)
-    const ENDPOINT = "PASTE_WEB_APP_URL_HER";        // Google Apps Script web app URL
-    const API_KEY  = "SETT_EN_HEMMELIG_NØKKEL";      // hemmelig streng du velger
-
-    // Språktekster
-    const TEXT = {
-      no: {
-        title:"Bli med på ventelista",
-        lead:"Legg igjen navn og e-post, så sier vi fra når AllLinguageme er klar.",
-        name:"Navn", email:"E-post",
-        placeholderName:"Fornavn og etternavn",
-        placeholderEmail:"navn@domene.no",
-        submit:"Meld meg på",
-        ok:"Takk! Du er registrert. 🎉",
-        err:"Noe gikk galt. Prøv igjen.",
-        langNo:"Norsk", langEn:"English"
-      },
-      en: {
-        title:"Join the waitlist",
-        lead:"Leave your name and email and we’ll notify you when AllLinguageme is ready.",
-        name:"Name", email:"Email",
-        placeholderName:"First and last name",
-        placeholderEmail:"name@example.com",
-        submit:"Join waitlist",
-        ok:"Thanks! You’re on the list. 🎉",
-        err:"Something went wrong. Please try again.",
-        langNo:"Norsk", langEn:"English"
-      }
-    };
-
-    // Auto språk + lagre valg
-    const savedLang = localStorage.getItem("lang");
-    const auto = (navigator.language||"").toLowerCase().startsWith("no") ? "no":"en";
-    let lang = savedLang || auto;
-
-    function setLang(l){
-      lang=l; localStorage.setItem("lang", l);
-      const t=TEXT[l];
-      document.getElementById("t-title").textContent=t.title;
-      document.getElementById("t-lead").textContent=t.lead;
-      document.getElementById("t-name").textContent=t.name;
-      document.getElementById("t-email").textContent=t.email;
-      document.getElementById("name").placeholder=t.placeholderName;
-      document.getElementById("email").placeholder=t.placeholderEmail;
-      document.getElementById("submit").textContent=t.submit;
-      document.getElementById("pill-no").textContent=t.langNo;
-      document.getElementById("pill-en").textContent=t.langEn;
-      document.querySelectorAll(".pill").forEach(p=>p.classList.remove("active"));
-      document.getElementById(l==="no"?"pill-no":"pill-en").classList.add("active");
-    }
-
-    // Innsending til Google Sheet, fallback til localStorage
-    async function submitForm(e){
-      e.preventDefault();
-      const name  = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const btn = document.getElementById("submit");
-      const msg = document.getElementById("msg");
-      if(!name || !email) return;
-
-      btn.disabled=true; msg.textContent="";
-
-      try{
-        const res = await fetch(ENDPOINT, {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ key: API_KEY, name, email, lang })
-        });
-        if(!res.ok) throw new Error("not ok");
-        msg.textContent = TEXT[lang].ok;
-        msg.className = "mini success";
-        document.getElementById("form").reset();
-      }catch(err){
-        const list = JSON.parse(localStorage.getItem("waitlist")||"[]");
-        list.push({name,email,lang,ts:Date.now()});
-        localStorage.setItem("waitlist", JSON.stringify(list));
-        msg.textContent = TEXT[lang].ok + " (lagret lokalt)";
-        msg.className = "mini success";
-      }finally{
-        btn.disabled=false;
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", ()=>{
-      setLang(lang);
-      document.getElementById("pill-no").onclick=()=>setLang("no");
-      document.getElementById("pill-en").onclick=()=>setLang("en");
-      document.getElementById("form").addEventListener("submit", submitForm);
-    });
-  </script>
-</body>
+   
+    
+</body
 </html>
