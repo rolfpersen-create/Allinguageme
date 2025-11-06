@@ -20,13 +20,46 @@
     <pre id="output">Ingen registrerte e-poster enda.</pre>
   </div>
 
-  <script>
-    // FYLL INN (samme som i index.html)
   
+   <script>
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbxNAPqIXQh4DjRaHVEDQwPK6ByDDyLXQgZRSClXY4Ml-XwwiTNpjVF7Sm4Bl1pUav/exec";
+const API_KEY = "rolf-venteliste-2025";
 
-const ENDPOINT = "<script>
-  const ENDPOINT = "https://script.google.com/macros/s/AKfycbzKNAPAglXQbh4DjRaHVEDQwPk6ByDDyLXQgZR5CIfXY4MI-VxwiTNpjVF7sm-ZO44X/exec";
-  const API_KEY   = "rolf-venteliste-2025";
+async function downloadList() {
+  const out = document.getElementById("output");
+  out.textContent = "Laster...";
+  try {
+    const res = await fetch(`${ENDPOINT}?key=${encodeURIComponent(API_KEY)}`);
+    if (!res.ok) throw new Error("Not OK");
+    const rows = await res.json();
+    if (!rows || rows.length < 1) {
+      out.textContent = "Ingen registrerte e-poster enda.";
+      return;
+    }
+    const csv = rows.map(r => r.join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "venteliste.csv";
+    link.click();
+    out.textContent = `${rows.length - 1} rader lastet ned.`;
+  } catch (e) {
+    out.textContent = "Kunne ikke hente fra Google Sheet. Viser lokal fallback.\nIngen lokalt lagret.";
+  }
+}
+
+function clearList() {
+  if (!confirm("Dette sletter LOKAL fallback (ikke Google-arket). Fortsette?")) return;
+  localStorage.removeItem("waitlist");
+  document.getElementById("output").textContent = "Lokal venteliste tømt.";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("downloadBtn").onclick = downloadList;
+  document.getElementById("clearBtn").onclick = clearList;
+});
+</script>
+
 </script>
 ";
 const API_KEY = "rolf-venteliste-2025";
